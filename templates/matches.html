@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Potential Matches{% endblock %}
+{% block content %}
+<h1>Potential Matches</h1>
+
+<div class="source-item">
+  <span class="pill pill-{{ item.report_type }}">{{ item.report_type }}</span>
+  <h2>{{ item.title }}</h2>
+  <p class="muted">{{ item.category }} · {{ item.colour }} · {{ item.location }} · {{ item.date_time }}</p>
+  <p>{{ item.description }}</p>
+</div>
+
+<p class="muted small">
+  Score formula:
+  {{ (weights.text*100)|int }}% Text + {{ (weights.image*100)|int }}% Image +
+  {{ (weights.location*100)|int }}% Location + {{ (weights.category*100)|int }}% Category +
+  {{ (weights.colour*100)|int }}% Colour + {{ (weights.time*100)|int }}% Time
+</p>
+
+{% if results %}
+  {% for r in results %}
+  {% set counterpart_id = r.found_item_id if item.report_type == 'lost' else r.lost_item_id %}
+  {% set counterpart = candidate_by_id[counterpart_id] %}
+  <div class="match-card match-{{ r.match_category }}">
+    <div class="match-card-header">
+      <div>
+        <h3>{{ counterpart.title }}</h3>
+        <p class="muted small">{{ counterpart.category }} · {{ counterpart.colour }} · {{ counterpart.location }} · {{ counterpart.date_time }}</p>
+      </div>
+      <div class="match-score">
+        <span class="score-num">{{ (r.total_score*100)|round(1) }}%</span>
+        <span class="score-label">{{ r.match_label }}</span>
+      </div>
+    </div>
+
+    <div class="match-body">
+      {% if counterpart.image_reference %}
+        <img class="match-thumb" src="{{ url_for('uploaded_file', filename=counterpart.image_reference) }}" alt="">
+      {% endif %}
+      <div class="match-details">
+        <p>{{ counterpart.description }}</p>
+        <div class="score-bars">
+          <div class="score-bar"><span>Text</span><div class="bar"><div style="width:{{ (r.text_score*100)|int }}%"></div></div><em>{{ (r.text_score*100)|int }}%</em></div>
+          <div class="score-bar"><span>Image</span><div class="bar"><div style="width:{{ (r.image_score*100)|int }}%"></div></div><em>{{ (r.image_score*100)|int }}%</em></div>
+          <div class="score-bar"><span>Location</span><div class="bar"><div style="width:{{ (r.location_score*100)|int }}%"></div></div><em>{{ (r.location_score*100)|int }}%</em></div>
+          <div class="score-bar"><span>Category</span><div class="bar"><div style="width:{{ (r.category_score*100)|int }}%"></div></div><em>{{ (r.category_score*100)|int }}%</em></div>
+          <div class="score-bar"><span>Colour</span><div class="bar"><div style="width:{{ (r.colour_score*100)|int }}%"></div></div><em>{{ (r.colour_score*100)|int }}%</em></div>
+          <div class="score-bar"><span>Time</span><div class="bar"><div style="width:{{ (r.time_score*100)|int }}%"></div></div><em>{{ (r.time_score*100)|int }}%</em></div>
+        </div>
+        <div class="explanation">
+          {% for reason in r.explanation %}<span class="reason-chip">{{ reason }}</span>{% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="match-actions">
+      <a class="btn-primary btn-small" href="{{ url_for('submit_claim', match_id=r.match_id) }}">Claim this item →</a>
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+  <p class="muted">No potential matches found yet. Check back later as more reports are added.</p>
+{% endif %}
+{% endblock %}

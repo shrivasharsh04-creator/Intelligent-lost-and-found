@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Browse Reports{% endblock %}
+{% block content %}
+<h1>Browse Reports</h1>
+
+<div class="tab-row">
+  <a class="tab {{ 'active' if report_type == 'lost' }}" href="{{ url_for('list_items', type='lost', q=q) }}">Lost Items</a>
+  <a class="tab {{ 'active' if report_type == 'found' }}" href="{{ url_for('list_items', type='found', q=q) }}">Found Items</a>
+</div>
+
+<form class="search-row" method="get">
+  <input type="hidden" name="type" value="{{ report_type }}">
+  <input type="text" name="q" value="{{ q }}" placeholder="Search by keyword, location...">
+  <button class="btn-secondary" type="submit">Search</button>
+</form>
+
+{% if items %}
+<div class="card-grid">
+  {% for item in items %}
+  <div class="item-card">
+    {% if item.image_reference %}
+      <img src="{{ url_for('uploaded_file', filename=item.image_reference) }}" alt="{{ item.title }}">
+    {% else %}
+      <div class="img-placeholder">No photo</div>
+    {% endif %}
+    <div class="item-card-body">
+      <span class="pill pill-{{ item.report_type }}">{{ item.report_type }}</span>
+      <h3>{{ item.title }}</h3>
+      <p class="muted small">{{ item.category }} · {{ item.location }}</p>
+      <p>{{ item.description[:110] }}{% if item.description|length > 110 %}…{% endif %}</p>
+      <p class="muted small">Reported {{ item.date_time }}</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p class="muted">No reports found.</p>
+{% endif %}
+{% endblock %}

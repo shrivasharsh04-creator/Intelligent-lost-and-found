@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<h1>Administrator Dashboard</h1>
+
+<section class="stat-row">
+  <div class="stat-card"><span class="stat-num">{{ total_users }}</span><span class="stat-label">Users</span></div>
+  <div class="stat-card"><span class="stat-num">{{ total_items }}</span><span class="stat-label">Total Reports</span></div>
+  <div class="stat-card"><span class="stat-num">{{ total_matches }}</span><span class="stat-label">Computed Matches</span></div>
+  <div class="stat-card"><span class="stat-num">{{ recovered }}</span><span class="stat-label">Recovered</span></div>
+  <div class="stat-card"><span class="stat-num">{{ pending_claims }}</span><span class="stat-label">Pending Claims</span></div>
+</section>
+
+<div class="two-col">
+  <section class="panel">
+    <h2>Reports by Category</h2>
+    <table class="data-table">
+      <thead><tr><th>Category</th><th>Count</th></tr></thead>
+      <tbody>
+      {% for row in by_category %}
+        <tr><td>{{ row.category }}</td><td>{{ row.c }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  <section class="panel">
+    <h2>Reports by Location (top 10)</h2>
+    <table class="data-table">
+      <thead><tr><th>Location</th><th>Count</th></tr></thead>
+      <tbody>
+      {% for row in by_location %}
+        <tr><td>{{ row.location }}</td><td>{{ row.c }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<section class="panel">
+  <h2>Claim Moderation Queue</h2>
+  {% if claims %}
+  <table class="data-table">
+    <thead><tr><th>Claimant</th><th>Lost</th><th>Found</th><th>Score</th><th>Details</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+    {% for c in claims %}
+      <tr>
+        <td>{{ c.claimant_name }}</td>
+        <td>{{ c.lost_title }}</td>
+        <td>{{ c.found_title }}</td>
+        <td>{{ (c.total_score*100)|round(1) }}%</td>
+        <td class="wrap-cell">{{ c.verification_details }}</td>
+        <td><span class="status status-{{ c.status }}">{{ c.status.replace('_',' ') }}</span></td>
+        <td class="action-cell">
+          {% if c.status == 'pending' %}
+          <form method="post" action="{{ url_for('review_claim', claim_id=c.claim_id, action='verify') }}"><button class="btn-tiny btn-verify" type="submit">Verify</button></form>
+          <form method="post" action="{{ url_for('review_claim', claim_id=c.claim_id, action='needs_info') }}"><button class="btn-tiny" type="submit">Need Info</button></form>
+          <form method="post" action="{{ url_for('review_claim', claim_id=c.claim_id, action='reject') }}"><button class="btn-tiny btn-reject" type="submit">Reject</button></form>
+          {% else %}
+          <span class="muted small">Reviewed {{ c.reviewed_at }}</span>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No claims submitted yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

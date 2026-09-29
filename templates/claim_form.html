@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Submit Claim{% endblock %}
+{% block content %}
+<h1>Submit a Claim</h1>
+<p class="muted">Match confidence: <strong>{{ (match.total_score*100)|round(1) }}%</strong> ({{ match.match_category.replace('_',' ') }})</p>
+
+<div class="two-col">
+  <div class="panel">
+    <h3>Lost Report</h3>
+    <p><strong>{{ lost_item.title }}</strong></p>
+    <p class="muted small">{{ lost_item.category }} · {{ lost_item.colour }} · {{ lost_item.location }}</p>
+    <p>{{ lost_item.description }}</p>
+  </div>
+  <div class="panel">
+    <h3>Found Report</h3>
+    <p><strong>{{ found_item.title }}</strong></p>
+    <p class="muted small">{{ found_item.category }} · {{ found_item.colour }} · {{ found_item.location }}</p>
+    <p>{{ found_item.description }}</p>
+  </div>
+</div>
+
+<div class="notice-box">
+  A potential match is <strong>not</strong> automatic proof of ownership (Section 5.7). Please provide
+  a non-public identifying detail — a unique mark, sticker, engraving, serial number, or the item's
+  contents — so an administrator can verify the claim.
+</div>
+
+<form method="post" class="form-grid">
+  <label class="full">Verification Details *
+    <textarea name="verification_details" rows="4" placeholder="e.g. There is a small scratch on the bottom-left corner and a blue keychain attached to the zipper." required></textarea>
+  </label>
+  <button class="btn-primary full" type="submit">Submit Claim for Review</button>
+</form>
+{% endblock %}

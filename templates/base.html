@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Intelligent Lost & Found{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="{{ url_for('index') if session.user_id else url_for('login') }}">
+      <span class="brand-mark">◆</span> Intelligent Lost&nbsp;&amp;&nbsp;Found
+    </a>
+    {% if session.user_id %}
+    <nav class="nav">
+      <a href="{{ url_for('index') }}">Dashboard</a>
+      <a href="{{ url_for('report_lost') }}">Report Lost</a>
+      <a href="{{ url_for('report_found') }}">Report Found</a>
+      <a href="{{ url_for('list_items', type='lost') }}">Browse</a>
+      <a href="{{ url_for('my_claims') }}">My Claims</a>
+      {% if session.role == 'admin' %}<a href="{{ url_for('admin_dashboard') }}">Admin</a>{% endif %}
+      <a class="badge-link" href="{{ url_for('index') }}">🔔 {% if unread_count %}<span class="badge">{{ unread_count }}</span>{% endif %}</a>
+      <span class="user-chip">{{ session.name }} <small>({{ session.role }})</small></span>
+      <a href="{{ url_for('logout') }}" class="btn-ghost">Logout</a>
+    </nav>
+    {% endif %}
+  </div>
+</header>
+
+<main class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-stack">
+      {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <p>Intelligent Lost &amp; Found — AI-Powered Object Matching and Recovery System · MCA Mini Project Prototype</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Report {{ report_type|capitalize }} Item{% endblock %}
+{% block content %}
+<h1>Report a {{ report_type|capitalize }} Item</h1>
+<p class="muted">Fields marked * are required. A clear photo significantly improves AI match accuracy.</p>
+
+<form method="post" enctype="multipart/form-data" class="form-grid">
+  <label>Category *
+    <select name="category" required>
+      <option value="">Select category</option>
+      {% for c in categories %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+    </select>
+  </label>
+
+  <label>Item Title *
+    <input type="text" name="title" placeholder="e.g. Black Lenovo laptop bag" required>
+  </label>
+
+  <label class="full">Description *
+    <textarea name="description" rows="4" placeholder="Describe the item in detail — brand, marks, contents, distinguishing features..." required></textarea>
+  </label>
+
+  <label>Colour
+    <input type="text" name="colour" placeholder="e.g. black">
+  </label>
+
+  <label>Location *
+    <input type="text" name="location" placeholder="e.g. Computer Lab 3" required>
+  </label>
+
+  <label>Date & Time *
+    <input type="datetime-local" name="date_time" required>
+  </label>
+
+  <label>Unique Identifier (optional)
+    <input type="text" name="unique_id" placeholder="serial no. / roll no. / engraved initials">
+  </label>
+
+  <label class="full">Photo (optional but recommended)
+    <input type="file" name="image" accept="image/png, image/jpeg, image/webp">
+  </label>
+
+  <button class="btn-primary full" type="submit">Submit {{ report_type|capitalize }} Report</button>
+</form>
+{% endblock %}

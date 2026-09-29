@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}My Claims{% endblock %}
+{% block content %}
+<h1>My Claims</h1>
+
+{% if claims %}
+<table class="data-table">
+  <thead><tr><th>Lost Item</th><th>Found Item</th><th>Match Score</th><th>Status</th><th>Submitted</th></tr></thead>
+  <tbody>
+  {% for c in claims %}
+    <tr>
+      <td>{{ c.lost_title }}</td>
+      <td>{{ c.found_title }}</td>
+      <td>{{ (c.total_score*100)|round(1) }}%</td>
+      <td><span class="status status-{{ c.status }}">{{ c.status.replace('_',' ') }}</span></td>
+      <td>{{ c.created_at }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="muted">You haven't submitted any claims yet.</p>
+{% endif %}
+{% endblock %}
